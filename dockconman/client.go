@@ -13,8 +13,8 @@ import (
 
 	"github.com/apex/log"
 	"github.com/flynn/go-shlex"
-	"github.com/insrapperswil/dockconman/pkg/envhelper"
-	"github.com/insrapperswil/dockconman/pkg/ttyhelper"
+	"github.com/jklaiber/dockconman/pkg/envhelper"
+	"github.com/jklaiber/dockconman/pkg/ttyhelper"
 	"github.com/kr/pty"
 	"golang.org/x/crypto/ssh"
 )

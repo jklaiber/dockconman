@@ -1,4 +1,4 @@
-module github.com/insrapperswil/dockconman
+module github.com/jklaiber/dockconman
 
 go 1.14
 

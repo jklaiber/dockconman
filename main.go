@@ -5,7 +5,7 @@ import (
 	"os"
 
 	"github.com/apex/log"
-	"github.com/insrapperswil/dockconman/dockconman"
+	"github.com/jklaiber/dockconman/dockconman"
 	"github.com/urfave/cli/v2"
 )
 
