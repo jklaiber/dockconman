@@ -39,8 +39,21 @@ GLOBAL OPTIONS:
    --help, -h                        show help (default: false)
 ```
 
+### Environment Variables
+| Variable | Description |
+|---|---|
+|DOCKCONMAN_CONTAINER| Target container |
+|DOCKCONMAN_COMMAND| Command which should be executed on target container |
+
+
 ### Docker Usage
 When you want to use the program within a Docker container, then you can use the following command below.
 ```
-$ 
+$ docker run \
+-it \
+-p 2222:2222 \
+--env DOCKCONMAN_CONTAINER=2434307646eb \
+--env DOCKCONMAN_COMMAND=bash \
+-v /var/run/docker.sock:/var/run/docker.sock \
+jklaiber/dockconman:latest
 ```

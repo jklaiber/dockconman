@@ -1,9 +1,7 @@
 package dockconman
 
 import (
-	"bytes"
 	"fmt"
-	"html/template"
 	"io"
 	"os"
 	"os/exec"
@@ -212,47 +210,12 @@ func (c *Client) HandleChannelRequests(channel ssh.Channel, requests <-chan *ssh
 func (c *Client) runCommand(channel ssh.Channel, entrypoint string, command []string) {
 	var cmd *exec.Cmd
 	var err error
-	// existingContainer := ""
-	// // Attaching to an existing container
-	// args := []string{"exec"}
-	// if len(c.Config.DockerExecArgs) > 0 {
-	// 	args = append(args, c.Config.DockerExecArgs...)
-	// 	if err := c.alterArgs(args); err != nil {
-	// 		log.Errorf("Failed to execute template on args: %v", err)
-	// 		return
-	// 	}
-	// } else {
-	// 	inlineExec, err := c.alterArg(c.Server.DockerExecArgs)
-	// 	if err != nil {
-	// 		log.Errorf("Failed to execute template on arg: %v", err)
-	// 		return
-	// 	}
-	// 	execArgs, err := shlex.Split(inlineExec)
-	// 	if err != nil {
-	// 		log.Errorf("Failed to split arg %q: %v", inlineExec, err)
-	// 		return
-	// 	}
-	// 	args = append(args, execArgs...)
-	// }
-
-	// args = append(args, existingContainer)
-	// if entrypoint != "" {
-	// 	args = append(args, entrypoint)
-	// }
-	// args = append(args, command...)
-	// log.Debugf("Executing 'docker %s'", strings.Join(args, " "))
 
 	args := []string{"exec"}
 	args = append(args, "-it")
 	args = append(args, c.Server.DockerContainer)
-	if len(c.Server.DockerExecArgs) > 0 {
-		args = append(args, c.Server.DockerExecArgs)
-		if err := c.alterArgs(args); err != nil {
-			log.Errorf("Failed to execute command with the given arguments")
-			return
-		}
-	}
-
+	splitDockerExecArgs := strings.Split(c.Server.DockerExecArgs, " ")
+	args = append(args, splitDockerExecArgs...)
 	cmd = exec.Command("docker", args...)
 	cmd.Env = c.Config.Env.List()
 
@@ -301,29 +264,4 @@ func (c *Client) runCommand(channel ssh.Channel, entrypoint string, command []st
 	}
 	channel.Close()
 	log.Debugf("cmd.Wait done")
-}
-
-func (c *Client) alterArg(arg string) (string, error) {
-	tmpl, err := template.New("run-args").Parse(arg)
-	if err != nil {
-		return "", err
-	}
-
-	var buff bytes.Buffer
-	if err := tmpl.Execute(&buff, c.Config); err != nil {
-		return "", err
-	}
-
-	return buff.String(), nil
-}
-
-func (c *Client) alterArgs(args []string) error {
-	for idx, arg := range args {
-		newArg, err := c.alterArg(arg)
-		if err != nil {
-			return err
-		}
-		args[idx] = newArg
-	}
-	return nil
 }

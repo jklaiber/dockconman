@@ -78,29 +78,35 @@ JNZioxKUQ6a5WJadxQ55tI0SX95afUhRtIhTnpyAAXJqSvbQJsQMgjypLvVBPllS
 PESdBU/hK0JLn6G9x8D+aRcCAwEAAQ==
 -----END PUBLIC KEY-----`
 
+const DefaultBanner = `#############################
+# Docker Connection Manager #
+#############################
+`
+
 func main() {
 	app := &cli.App{
 		Name:  "dockconman",
 		Usage: "simple ssh portal to containers",
 		Flags: []cli.Flag{
 			&cli.StringFlag{
-				Name:    "container_name",
-				Aliases: []string{"n"},
-				Usage:   "Target container",
+				Name:     "container_name",
+				Aliases:  []string{"n"},
+				Usage:    "Target container",
+				EnvVars:  []string{"DOCKCONMAN_CONTAINER"},
+				Required: true,
 			},
 			&cli.StringFlag{
 				Name:    "command",
 				Aliases: []string{"c"},
 				Usage:   "Execute command on target container",
+				EnvVars: []string{"DOCKCONMAN_COMMAND"},
+				Value:   "bash",
 			},
 			&cli.StringFlag{
 				Name:    "banner",
 				Aliases: []string{"b"},
 				Usage:   "Login banner",
-				Value: `#############################
-# Docker Connection Manager #
-#############################
-`,
+				Value:   DefaultBanner,
 			},
 			&cli.StringFlag{
 				Name:    "shell",
@@ -112,6 +118,7 @@ func main() {
 				Name:    "port",
 				Aliases: []string{"p"},
 				Usage:   "Binding port",
+				EnvVars: []string{"DOCKCONMAN_PORT"},
 				Value:   ":2222",
 			},
 		},
@@ -121,7 +128,7 @@ func main() {
 			if err != nil {
 				log.Fatalf("Cannot create server")
 			}
-
+			server.Banner = DefaultBanner
 			server.DefaultShell = c.String("shell")
 			server.DockerContainer = c.String("container_name")
 			server.DockerExecArgs = c.String("command")
