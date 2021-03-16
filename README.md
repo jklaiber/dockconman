@@ -39,13 +39,6 @@ GLOBAL OPTIONS:
    --help, -h                        show help (default: false)
 ```
 
-### Environment Variables
-| Variable | Description |
-|---|---|
-|DOCKCONMAN_CONTAINER| Target container |
-|DOCKCONMAN_COMMAND| Command which should be executed on target container |
-
-
 ### Docker Usage
 When you want to use the program within a Docker container, then you can use the following command below.
 ```
@@ -54,6 +47,22 @@ $ docker run \
 -p 2222:2222 \
 --env DOCKCONMAN_CONTAINER=2434307646eb \
 --env DOCKCONMAN_COMMAND=bash \
+--env DOCKCONMAN_SSH_KEY_FILE=/etc/rsa/id_rsa \
 -v /var/run/docker.sock:/var/run/docker.sock \
+-v /etc/rsa/id_rsa:/etc/rsa/id_rsa \
 jklaiber/dockconman:latest
 ```
+
+## Environment Variables
+| Variable | Description |
+|---|---|
+|DOCKCONMAN_CONTAINER| Target container |
+|DOCKCONMAN_COMMAND| Command which should be executed on target container |
+|DOCKCONMAN_PORT|Port on which the ssh server should listen|
+|DOCKCONMAN_SSH_KEY_FILE|Host key destination which is mounted from the host system (e.g `/etc/rsa/id_rsa`)|
+
+## SSH Key Handling
+The tool provides three different handling methods with the host (container) ssh key. 
+1. It can use a default key (specified with: `-d true`).
+2. It can generate an own one when starting the application (this is the default).
+3. You can mount your own key in the container or give it as value (specified with: `-k /etc/id_rsa`).

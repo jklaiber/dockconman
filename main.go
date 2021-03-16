@@ -6,6 +6,7 @@ import (
 
 	"github.com/apex/log"
 	"github.com/jklaiber/dockconman/dockconman"
+	"github.com/jklaiber/dockconman/pkg/rsahelper"
 	"github.com/urfave/cli/v2"
 )
 
@@ -103,6 +104,18 @@ func main() {
 				Value:   "bash",
 			},
 			&cli.StringFlag{
+				Name:    "key-destination",
+				Aliases: []string{"k"},
+				Usage:   "Host key destination which should be taken",
+				EnvVars: []string{"DOCKCONMAN_SSH_KEY_FILE"},
+			},
+			&cli.StringFlag{
+				Name:    "default-key",
+				Aliases: []string{"d"},
+				Usage:   "Disable automatic key generation",
+				Value:   "false",
+			},
+			&cli.StringFlag{
 				Name:    "banner",
 				Aliases: []string{"b"},
 				Usage:   "Login banner",
@@ -133,7 +146,22 @@ func main() {
 			server.DockerContainer = c.String("container_name")
 			server.DockerExecArgs = c.String("command")
 			server.Banner = c.String("banner")
-			server.AddHostKey(DefaultSshKey)
+
+			if c.String("key-destination") == "" && c.String("default-key") == "true" {
+				server.AddHostKey(DefaultSshKey)
+			} else if c.String("default-key") == "false" && c.String("key-destination") == "" {
+				rsaKey, err := rsahelper.GetRSA(4096)
+				if err != nil {
+					log.Errorf("RSA key generation failed")
+				}
+				server.AddHostKey(rsaKey)
+			} else if c.String("key-destination") != "" {
+				rsaKey, err := rsahelper.RsaSetup(c.String("key-destination"))
+				if err != nil {
+					log.Errorf("RSA key loading failed")
+				}
+				server.AddHostKey(rsaKey)
+			}
 
 			bindAddress := c.String("port")
 			listener, err := net.Listen("tcp", bindAddress)

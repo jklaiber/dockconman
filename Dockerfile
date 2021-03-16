@@ -14,11 +14,12 @@ COPY . .
 RUN go build -o ./out/dockconman .
 
 FROM alpine:3.9 
+LABEL maintainer="Julian Klaiber"
+
 RUN apk add ca-certificates
 RUN apk add --update docker openrc
 RUN rc-update add docker boot
 
-COPY --from=build_base /tmp/dockconman/out/dockconman /app/dockconman
-RUN ln -s /app/dockconman dockconman
+COPY --from=build_base /tmp/dockconman/out/dockconman /usr/bin/dockconman
 
-CMD ["./dockconman"]
+ENTRYPOINT [ "/usr/bin/dockconman" ]
