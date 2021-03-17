@@ -104,6 +104,18 @@ func main() {
 				Value:   "bash",
 			},
 			&cli.StringFlag{
+				Name:    "user",
+				Aliases: []string{"u"},
+				Usage:   "User for authenticating",
+				EnvVars: []string{"DOCKCONMAN_USER"},
+			},
+			&cli.StringFlag{
+				Name:    "password",
+				Aliases: []string{"p"},
+				Usage:   "Password for authenticating",
+				EnvVars: []string{"DOCKCONMAN_PASSWORD"},
+			},
+			&cli.StringFlag{
 				Name:    "key-destination",
 				Aliases: []string{"k"},
 				Usage:   "Host key destination which should be taken",
@@ -129,7 +141,6 @@ func main() {
 			},
 			&cli.StringFlag{
 				Name:    "port",
-				Aliases: []string{"p"},
 				Usage:   "Binding port",
 				EnvVars: []string{"DOCKCONMAN_PORT"},
 				Value:   ":2222",
@@ -161,6 +172,18 @@ func main() {
 					log.Errorf("RSA key loading failed")
 				}
 				server.AddHostKey(rsaKey)
+			}
+
+			if c.String("user") == "" && c.String("password") == "" {
+				server.SshConfig.PasswordCallback = nil
+			}
+
+			if c.String("user") != "" && c.String("password") == "" || c.String("user") == "" && c.String("password") != "" {
+				log.Fatalf("User or password not defined")
+			} else if c.String("user") != "" && c.String("password") != "" {
+				server.SshConfig.NoClientAuth = false
+				server.Password = c.String("password")
+				server.User = c.String("user")
 			}
 
 			bindAddress := c.String("port")
