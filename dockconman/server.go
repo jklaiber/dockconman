@@ -1,6 +1,7 @@
 package dockconman
 
 import (
+	"fmt"
 	"io/ioutil"
 	"net"
 	"os"
@@ -18,6 +19,8 @@ type Server struct {
 	DockerContainer string
 	DockerExecArgs  string
 	Banner          string
+	User            string
+	Password        string
 
 	initialized bool
 }
@@ -28,6 +31,12 @@ func NewServer() (*Server, error) {
 		Config:       ssh.Config{},
 		NoClientAuth: true,
 		MaxAuthTries: 0,
+		PasswordCallback: func(c ssh.ConnMetadata, pass []byte) (*ssh.Permissions, error) {
+			if c.User() == server.User && string(pass) == server.Password {
+				return nil, nil
+			}
+			return nil, fmt.Errorf("password rejected %q", c.User())
+		},
 	}
 	server.ClientConfigs = make(map[string]*ClientConfig, 0)
 	server.DefaultShell = "/bin/sh"
@@ -39,7 +48,6 @@ func (s *Server) Init() error {
 		return nil
 	}
 
-	s.SshConfig.PasswordCallback = nil
 	s.initialized = true
 	return nil
 }

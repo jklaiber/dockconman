@@ -6,7 +6,9 @@ The basic idea of this connection manager was to build a tool which allows you t
   
 A simple example of a use case can be found below.
 ```
-ToDo Use Case
++-------------+     +----------+     +--------------------+     +-------------+
+|user terminal| --> |dockconman| --> |container with virsh| --> |virsh console|
++-------------+     +----------+     +--------------------+     +-------------+
 ```
 
 ### Basic Usage 
@@ -31,12 +33,16 @@ COMMANDS:
    help, h  Shows a list of commands or help for one command
 
 GLOBAL OPTIONS:
-   --container_name value, -n value  Target container
-   --command value, -c value         Execute command on target container (default: "bash")
-   --banner value, -b value          Login banner (default: Docker Connection Manager)
-   --shell value, -s value           Default shell (default: "/bin/sh")
-   --port value, -p value            Binding port (default: ":2222")
-   --help, -h                        show help (default: false)
+   --container_name value, -n value   Target container [$DOCKCONMAN_CONTAINER]
+   --command value, -c value          Execute command on target container (default: "bash") [$DOCKCONMAN_COMMAND]
+   --user value, -u value             User for authenticating [$DOCKCONMAN_USER]
+   --password value, -p value         Password for authenticating [$DOCKCONMAN_PASSWORD]
+   --key-destination value, -k value  Host key destination which should be taken [$DOCKCONMAN_SSH_KEY_FILE]
+   --default-key value, -d value      Disable automatic key generation (default: "false")
+   --banner value, -b value           Login banner (default: "#############################\n# Docker Connection Manager #\n#############################\n")
+   --shell value, -s value            Default shell (default: "/bin/sh")
+   --port value                       Binding port (default: ":2222") [$DOCKCONMAN_PORT]
+   --help, -h                         show help (default: false)
 ```
 
 ### Docker Usage
@@ -60,6 +66,8 @@ jklaiber/dockconman:latest
 |DOCKCONMAN_COMMAND| Command which should be executed on target container |
 |DOCKCONMAN_PORT|Port on which the ssh server should listen|
 |DOCKCONMAN_SSH_KEY_FILE|Host key destination which is mounted from the host system (e.g `/etc/rsa/id_rsa`)|
+|DOCKCONMAN_USER|User which should be used for authenticating. When empty no authentication is used.|
+|DOCKCONMAN_PASSWORD|Password which is used besides the username for authenticating. When empty no authentication is used.|
 
 ## SSH Key Handling
 The tool provides three different handling methods with the host (container) ssh key. 
