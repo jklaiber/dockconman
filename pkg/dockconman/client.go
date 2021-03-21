@@ -78,14 +78,14 @@ func NewClient(conn *ssh.ServerConn, chans <-chan ssh.NewChannel, reqs <-chan *s
 
 	clientCounter++
 
-	log.Infof("Accepted %s for %s from %s", client.Config.AuthenticationMethod, conn.User(), conn.RemoteAddr().Network())
+	log.Infof("accepted user %s from %s", conn.User(), conn.RemoteAddr())
 	return &client
 }
 
 func (c *Client) HandleRequests() error {
 	go func(in <-chan *ssh.Request) {
 		for req := range in {
-			log.Debugf("HandleRequest: %v", req)
+			log.Debugf("handleRequest: %v", req)
 			if req.WantReply {
 				req.Reply(false, nil)
 			}
@@ -105,7 +105,7 @@ func (c *Client) HandleChannels() error {
 
 func (c *Client) HandleChannel(newChannel ssh.NewChannel) error {
 	if newChannel.ChannelType() != "session" {
-		log.Debugf("Unknown channel type: %s", newChannel.ChannelType())
+		log.Debugf("unknown channel type: %s", newChannel.ChannelType())
 		newChannel.Reject(ssh.UnknownChannelType, "unknown channel type")
 		return nil
 	}
@@ -116,9 +116,9 @@ func (c *Client) HandleChannel(newChannel ssh.NewChannel) error {
 		return err
 	}
 	c.ChannelIdx++
-	log.Debugf("HandleChannel.channel (client=%d channel=%d)", c.Idx, c.ChannelIdx)
+	log.Debugf("handleChannel.channel (client=%d channel=%d)", c.Idx, c.ChannelIdx)
 
-	log.Debug("Creating pty...")
+	log.Debug("creating pty...")
 	c.Pty, c.Tty, err = pty.Open()
 	if err != nil {
 		log.Errorf("pty.Open failed: PTY creation failed!")
@@ -138,7 +138,7 @@ func (c *Client) HandleChannelRequests(channel ssh.Channel, requests <-chan *ssh
 			ok := false
 			switch req.Type {
 			case "shell":
-				log.Debugf("HandleChannelRequests.req shell")
+				log.Debugf("handleChannelRequests.req shell")
 				if len(req.Payload) != 0 {
 					break
 				}
@@ -161,12 +161,12 @@ func (c *Client) HandleChannelRequests(channel ssh.Channel, requests <-chan *ssh
 
 			case "exec":
 				command := string(req.Payload[4:])
-				log.Debugf("HandleChannelRequests.req exec: %q", command)
+				log.Debugf("handleChannelRequests.req exec: %q", command)
 				ok = true
 
 				args, err := shlex.Split(command)
 				if err != nil {
-					log.Errorf("Failed to parse command %q: %v", command, args)
+					log.Errorf("failed to parse command %q: %v", command, args)
 				}
 				c.runCommand(channel, c.Config.EntryPoint, args)
 
@@ -178,7 +178,7 @@ func (c *Client) HandleChannelRequests(channel ssh.Channel, requests <-chan *ssh
 				c.Config.Env["USE_TTY"] = "1"
 				w, h := ttyhelper.ParseDims(req.Payload[termLen+4:])
 				ttyhelper.SetWinsize(c.Pty.Fd(), w, h)
-				log.Debugf("HandleChannelRequests.req pty-req: TERM=%q w=%q h=%q", c.Config.Env["TERM"], int(w), int(h))
+				log.Debugf("handleChannelRequests.req pty-req: TERM=%q w=%q h=%q", c.Config.Env["TERM"], int(w), int(h))
 
 			case "window-change":
 				w, h := ttyhelper.ParseDims(req.Payload)
@@ -190,16 +190,16 @@ func (c *Client) HandleChannelRequests(channel ssh.Channel, requests <-chan *ssh
 				key := string(req.Payload[4 : keyLen+4])
 				valueLen := req.Payload[keyLen+7]
 				value := string(req.Payload[keyLen+8 : keyLen+8+valueLen])
-				log.Debugf("HandleChannelRequets.req 'env': %s=%q", key, value)
+				log.Debugf("handleChannelRequets.req 'env': %s=%q", key, value)
 				c.Config.Env[key] = value
 
 			default:
-				log.Debugf("Unhandled request type: %q: %v", req.Type, req)
+				log.Debugf("unhandled request type: %q: %v", req.Type, req)
 			}
 
 			if req.WantReply {
 				if !ok {
-					log.Debugf("Declining %s request...", req.Type)
+					log.Debugf("declining %s request...", req.Type)
 				}
 				req.Reply(ok, nil)
 			}

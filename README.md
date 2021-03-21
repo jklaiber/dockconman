@@ -1,5 +1,5 @@
 # Docker Connection Manager
-Simple connection manager written in Go an inspired from the awesome [ssh2docker](#https://github.com/moul/ssh2docker/) project. 
+Simple connection manager written in Go an inspired from the awesome [ssh2docker](https://github.com/moul/ssh2docker/) project. 
 
 ## Usage
 The basic idea of this connection manager was to build a tool which allows you to connect via SSH to a defined running container with a specific execution command. This allows you to let users access specific functions of a container without exposing more services which you don't want to expose.  
