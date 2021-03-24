@@ -5,7 +5,7 @@ import (
 	"os"
 
 	"github.com/apex/log"
-	"github.com/jklaiber/dockconman/dockconman"
+	"github.com/jklaiber/dockconman/pkg/dockconman"
 	"github.com/jklaiber/dockconman/pkg/rsahelper"
 	"github.com/urfave/cli/v2"
 )
@@ -125,6 +125,7 @@ func main() {
 				Name:    "default-key",
 				Aliases: []string{"d"},
 				Usage:   "Disable automatic key generation",
+				EnvVars: []string{"DOCKCONMAN_DEFAULT_KEY"},
 				Value:   "false",
 			},
 			&cli.StringFlag{

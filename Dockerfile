@@ -11,7 +11,7 @@ RUN go mod download
 
 COPY . .
 
-RUN go build -o ./out/dockconman .
+RUN go build -o ./out/dockconman ./cmd/dockconman
 
 FROM alpine:3.9 
 LABEL maintainer="Julian Klaiber"
