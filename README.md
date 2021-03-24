@@ -1,3 +1,4 @@
+[![Container Build](https://github.com/jklaiber/dockconman/actions/workflows/container_build.yaml/badge.svg)](https://github.com/jklaiber/dockconman/actions/workflows/container_build.yaml)
 # Docker Connection Manager
 Simple connection manager written in Go an inspired from the awesome [ssh2docker](https://github.com/moul/ssh2docker/) project. 
 
