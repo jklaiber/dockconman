@@ -38,10 +38,10 @@ GLOBAL OPTIONS:
    --user value, -u value             User for authenticating [$DOCKCONMAN_USER]
    --password value, -p value         Password for authenticating [$DOCKCONMAN_PASSWORD]
    --key-destination value, -k value  Host key destination which should be taken [$DOCKCONMAN_SSH_KEY_FILE]
-   --default-key value, -d value      Disable automatic key generation (default: "false")
+   --default-key value, -d value      Disable automatic key generation (default: "false") [$DOCKCONMAN_DEFAULT_KEY]
    --banner value, -b value           Login banner (default: "#############################\n# Docker Connection Manager #\n#############################\n")
    --shell value, -s value            Default shell (default: "/bin/sh")
-   --port value                       Binding port (default: ":2222") [$DOCKCONMAN_PORT]
+   --port value                       Binding port (default: "2222") [$DOCKCONMAN_PORT]
    --help, -h                         show help (default: false)
 ```
 
@@ -68,6 +68,7 @@ jklaiber/dockconman:latest
 |DOCKCONMAN_SSH_KEY_FILE|Host key destination which is mounted from the host system (e.g `/etc/rsa/id_rsa`)|
 |DOCKCONMAN_USER|User which should be used for authenticating. When empty no authentication is used.|
 |DOCKCONMAN_PASSWORD|Password which is used besides the username for authenticating. When empty no authentication is used.|
+|DOCKCONMAN_BANNER|Banner which should be displayed after a successful login|
 
 ## SSH Key Handling
 The tool provides three different handling methods with the host (container) ssh key. 

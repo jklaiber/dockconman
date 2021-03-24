@@ -144,7 +144,7 @@ func main() {
 				Name:    "port",
 				Usage:   "Binding port",
 				EnvVars: []string{"DOCKCONMAN_PORT"},
-				Value:   ":2222",
+				Value:   "2222",
 			},
 		},
 		Action: func(c *cli.Context) error {
@@ -187,7 +187,7 @@ func main() {
 				server.User = c.String("user")
 			}
 
-			bindAddress := c.String("port")
+			bindAddress := ":" + c.String("port")
 			listener, err := net.Listen("tcp", bindAddress)
 			if err != nil {
 				log.Fatalf("Failed to start listener on %q", bindAddress)
